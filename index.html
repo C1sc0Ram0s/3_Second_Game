@@ -19,6 +19,10 @@
         <button class="btn btn-secondary btn-lg" type="button" id="colorBar" disabled></button>
     </div>
 
+    <div class="">
+        <button class="btn btn-secondary btn-md" type="button" id="statsButton" onclick="gameStats()">Stats</button>
+    </div>
+
 
     <script type="application/javascript">
         const sec3 = 300
@@ -28,6 +32,8 @@
         let dif
         let button = document.getElementById("ssbutton")
         let colorBar = document.getElementById("colorBar")
+        let attempts = 0
+
         function startGame(){
             if(button.innerText === "Start"){
                 stopTime = new Date().getTime()
@@ -42,25 +48,35 @@
                 button.className = "btn btn-primary btn-lg"
                 dif = Math.abs(startTime - stopTime)
                 console.log("diff: " + dif)
+                attempts++
+
+                if(dif < 3200 && dif >= 3000){
+                    colorBar.className = "btn btn-success btn-large"
+                }
+                else if(2800 < dif && dif < 3200){
+                    colorBar.className = "btn btn-primary btn-large"
+                }
+                else if(2500 < dif && dif < 3500){
+                    colorBar.className = "btn btn-warning btn-large"
+                }
+                else if(dif > 3500){
+                    colorBar.className = "btn btn-danger btn-large"
+                }
+                else{
+                    colorBar.className = "btn btn-secondary btn-large"
+                }
+
+                data.push([
+                    "Attempt: " + attempts,
+                    "Start Time: " + startTime,
+                    "Stop Time: " + stopTime
+                ])
             }
 
-            if(dif < 3200 && dif >= 3000){
-                colorBar.className = "btn btn-success btn-large"
-            }
-            else if(2800 < dif && dif < 3200){
-                colorBar.className = "btn btn-primary btn-large"
-            }
-            else if(2500 < dif && dif < 3500){
-                colorBar.className = "btn btn-warning btn-large"
-            }
-            else if(dif > 3500){
-                colorBar.className = "btn btn-danger btn-large"
-            }
-            else{
-                colorBar.className = "btn btn-secondary btn-large"
-            }
+        }
 
-
+        function gameStats(){
+            console.log(data)
         }
 
     </script>
