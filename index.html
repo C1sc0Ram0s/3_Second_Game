@@ -5,6 +5,9 @@
     <title>3 Second Game</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.css">
+    <script src="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
 </head>
 <body>
 <h1>3 Second Game</h1>
@@ -19,14 +22,24 @@
     <button class="btn btn-secondary btn-lg" type="button" id="colorBar" disabled></button>
 </div>
 
-<div class="d-grid col-2 mx-left">
-    <button class="btn btn-secondary btn-md" type="button" id="attemptSummary" onclick="attemptSummary()">Attempt Summary</button> <br>
-    <button class="btn btn-secondary btn-md" type="button" id="resultSummary" onclick="resultSummary()">Result Summary</button>
+<div class="d-grid gap-1 col-2 mx-left">
+    <button class="btn btn-secondary btn-md" type="button" id="attemptSummary" onclick="attemptSummary()">Attempt Summary</button>
+    <div class="container">
+        <p id="attemptSummaryStats"></p> <br>
+    </div>
+    <button class="btn btn-secondary btn-md" type="button" id="resultSummary" onclick="resultSummary()">Result Summary</button> <br>
+    <div class="container">
+        <p id="resultSummaryStats"></p> <br>
+    </div>
+    <button class="btn btn-secondary btn-md" type="button" id="summaryChart" onclick="chartStats()">Chart</button>
+
+    <div class="ct-chart ct-minor-second" id="chart"></div>
+
 </div>
 
 
 <script type="application/javascript">
-    const sec3 = 300
+    const seconds = 3000
     let data = []
     let startTime
     let stopTime
@@ -38,29 +51,30 @@
     function startGame(){
         if(button.innerText === "Start"){
             stopTime = new Date().getTime()
-            console.log("StopTime: " + stopTime)
             button.innerText = "Stop"
             button.className = "btn btn-secondary btn-lg"
+
+            document.getElementById("attemptSummaryStats").innerText = ""
+            document.getElementById("resultSummaryStats").innerText = ""
+            document.getElementById("chart").innerHTML= ""
         }
         else if(button.innerText === "Stop"){
             startTime = new Date().getTime()
-            console.log("Start time: " + startTime)
             button.innerText = "Start"
             button.className = "btn btn-primary btn-lg"
             dif = Math.abs(startTime - stopTime)
-            console.log("diff: " + dif)
             attempts++
 
-            if(dif < 3200 && dif >= 3000){
+            if(dif < (seconds + 200) && dif >= seconds){
                 colorBar.className = "btn btn-success btn-large"
             }
-            else if(2800 < dif && dif < 3200){
+            else if((seconds - 200) < dif && dif < (seconds + 200)){
                 colorBar.className = "btn btn-primary btn-large"
             }
-            else if(2500 < dif && dif < 3500){
+            else if((seconds - 500) < dif && dif < (seconds + 500)){
                 colorBar.className = "btn btn-warning btn-large"
             }
-            else if(dif > 3500){
+            else if(dif > (seconds + 500)){
                 colorBar.className = "btn btn-danger btn-large"
             }
             else{
@@ -71,35 +85,67 @@
                 "Attempt" : attempts,
                 "Start Time" :  startTime,
                 "Stop Time" : stopTime,
-                "Difference" : dif
+                "Difference" : dif,
             })
         }
 
     }
 
-    function gameStats(){
-        console.log(data)
+    function chartStats(){
+        let attemptLabel = []
+        let seriesData = []
+
+        for(let i in data){
+            attemptLabel[i] = data[i].Attempt
+            seriesData[i] = data[i].Difference
+        }
+
+        console.log(attemptLabel)
+        console.log(seriesData)
+
+        new Chartist.Line('#chart', {
+            labels: attemptLabel,
+            series: [seriesData]
+        });
     }
 
     function resultSummary(){
-        let min = 0
-        let max = 0
-        let result = []
+        let min = data[0].Difference
+        let max = data[0].Difference
+        let avg = 0
+        let result = ""
         for(let i in data){
-            if(data[i] > max ){
-                max = data[i, "Difference"]
+            if(data[i].Difference > max ){
+                max = data[i].Difference
             }
+            else{
+            }
+
+            if(data[i].Difference < min){
+                min = data[i].Difference
+            }
+            else{
+            }
+
+            avg += data[i].Difference
         }
-        console.log(max)
+        avg = avg/ data[data.length-1].Attempt
+
+        result = "Min: " + min + "\nMax: " + max + "\nAverage: " + avg + "\nAttempts: " + data[data.length-1].Attempt
+        document.getElementById("resultSummaryStats").innerText = result
+        console.log(result)
     }
 
     function attemptSummary(){
-        console.log()
+        let result = "Attempt: " + attempts + "\nStart Time: " + startTime + "\nStop Time: " + stopTime
+        document.getElementById("attemptSummaryStats").innerText = result
+        console.log("Attempt:" + attempts, "Start Time:" + startTime, "Stop Time:" + stopTime)
     }
 
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+
 </body>
 </html>
 
