@@ -12,14 +12,15 @@
 <body>
 <h1>3 Second Game</h1>
 <p>
-    Directions: Click the "Start" button in the middle of the screen. Once you belive 3 seconds have passed, click the "Stop" button. <br>
-    The bar below the button will turn green if your time is 3 seconds, blue if within +/- .2 seconds, yellow if within +/- .5 seconds, and red if its anything greater. <br>
+    Directions: Click the "Start" button in the middle of the screen. Once you believe 3 seconds have passed, click the "Stop" button. <br>
+    The bar below the button will turn gray if your time is below 3 seconds, green if your time is 3 seconds, blue if within +/- .2 seconds, <br>
+    yellow if within +/- .5 seconds, and red if its anything greater. <br>
     Goodluck!
 </p>
 
 <div class="d-grid gap-2 col-4 mx-auto">
     <button class="btn btn-primary btn-lg" type="button" id="ssbutton" onclick="startGame()">Start</button>
-    <button class="btn btn-secondary btn-lg" type="button" id="colorBar" disabled></button>
+    <button class="btn btn-light btn-lg" type="button" id="colorBar" disabled></button>
 </div>
 
 <div class="d-grid gap-1 col-2 mx-left">
@@ -33,7 +34,7 @@
     </div>
     <button class="btn btn-secondary btn-md" type="button" id="summaryChart" onclick="chartStats()">Chart</button>
 
-    <div class="ct-chart ct-minor-second" id="chart"></div>
+    <div class="ct-chart ct-square" id="chart"></div>
 
 </div>
 
@@ -65,7 +66,10 @@
             dif = Math.abs(startTime - stopTime)
             attempts++
 
-            if(dif < (seconds + 200) && dif >= seconds){
+            if(dif < (seconds-500)){
+                colorBar.className = "btn btn-secondary btn-large"
+            }
+            else if(dif < (seconds + 200) && dif >= seconds){
                 colorBar.className = "btn btn-success btn-large"
             }
             else if((seconds - 200) < dif && dif < (seconds + 200)){
@@ -78,7 +82,7 @@
                 colorBar.className = "btn btn-danger btn-large"
             }
             else{
-                colorBar.className = "btn btn-secondary btn-large"
+                colorBar.className = "btn btn-light btn-large"
             }
 
             data.push({
@@ -89,6 +93,7 @@
             })
         }
 
+        console.log(Date.now())
     }
 
     function chartStats(){
@@ -97,7 +102,7 @@
 
         for(let i in data){
             attemptLabel[i] = data[i].Attempt
-            seriesData[i] = data[i].Difference
+            seriesData[i] = data[i].Difference/1000
         }
 
         console.log(attemptLabel)
@@ -131,13 +136,13 @@
         }
         avg = avg/ data[data.length-1].Attempt
 
-        result = "Min: " + min + "\nMax: " + max + "\nAverage: " + avg + "\nAttempts: " + data[data.length-1].Attempt
+        result = "Min: " + min/1000 + "\nMax: " + max/1000 + "\nAverage: " + avg/1000 + "\nAttempts: " + data[data.length-1].Attempt
         document.getElementById("resultSummaryStats").innerText = result
         console.log(result)
     }
 
     function attemptSummary(){
-        let result = "Attempt: " + attempts + "\nStart Time: " + startTime + "\nStop Time: " + stopTime
+        let result = "Attempt: " + attempts + "\nStart Time: " + startTime + "\nStop Time: " + stopTime + "\nSeconds: " + dif/1000
         document.getElementById("attemptSummaryStats").innerText = result
         console.log("Attempt:" + attempts, "Start Time:" + startTime, "Stop Time:" + stopTime)
     }
